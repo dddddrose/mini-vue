@@ -1,5 +1,5 @@
 import { reactive } from '../reactive';
-import { effect } from '../effect';
+import { effect, stop } from '../effect';
 
 describe('effect', () => {
     it('happy path', () => {
@@ -23,7 +23,7 @@ describe('effect', () => {
     it('runner', () => {
         //effect 返回值runner
         let foo = 10;
-        const runner = effect(()=>{
+        const runner = effect(() => {
             foo++;
             return 'foo'
         })
@@ -38,14 +38,14 @@ describe('effect', () => {
         let dummy
         let run: any
         const scheduler = jest.fn(() => {
-          run = runner
+            run = runner
         })
         const obj = reactive({ foo: 1 })
         const runner = effect(
-          () => {
-            dummy = obj.foo
-          },
-          { scheduler }
+            () => {
+                dummy = obj.foo
+            },
+            { scheduler }
         )
         expect(scheduler).not.toHaveBeenCalled()
         expect(dummy).toBe(1)
@@ -58,5 +58,43 @@ describe('effect', () => {
         run()
         // should have run
         expect(dummy).toBe(2)
-      })
+    })
+
+
+    // stop 功能
+    it('stop', () => {
+        let dummy
+        const obj = reactive({ prop: 1 })
+        const runner = effect(() => {
+            dummy = obj.prop
+        })
+        obj.prop = 2
+        expect(dummy).toBe(2)
+        stop(runner)
+        obj.prop = 3
+        expect(dummy).toBe(2)
+
+        // stopped effect should still be manually callable
+        runner()
+        expect(dummy).toBe(3)
+    })
+
+    it('events: onStop', () => {
+        const obj = reactive({
+            foo: 1
+        });
+        const onStop = jest.fn();
+        let dummy;
+        const runner = effect(
+            () => {
+                dummy = obj.foo;
+            },
+            {
+                onStop,
+            }
+        );
+        stop(runner);
+        expect(onStop).toBeCalledTimes(1);
+    })
+
 })
