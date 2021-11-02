@@ -1,4 +1,4 @@
-import {readonly} from '../reactive';
+import { isReadonly, readonly, shallowReadonly } from '../reactive';
 
 describe('readonly', () => {
     it('happy path', () => {
@@ -8,4 +8,13 @@ describe('readonly', () => {
         expect(wrapped).not.toBe(original);
         expect(wrapped.foo).toBe(1);
     });
+})
+
+
+describe('shadowReadonly', () => {
+    it('shallow', () => {
+        const props = shallowReadonly({ n: { foo: 1 } });
+        expect(isReadonly(props)).toBe(true);
+        expect(isReadonly(props.n)).toBe(false);
+    })
 })

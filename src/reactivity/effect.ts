@@ -61,7 +61,10 @@ export function track(target, key) {
         dep = new Set();
         depsMap.set(key, dep);
     }
-    // {foo:1,sys:2}
+    trackEffects(dep)
+}
+
+export function trackEffects(dep) {
     if (!activeEffect) return;
     if (!shouldTrack) return;
     dep.add(activeEffect);// 当前的effect
@@ -71,6 +74,10 @@ export function track(target, key) {
 export function trigger(target, key) {
     let depsMap = targetMap.get(target);
     let dep = depsMap.get(key);
+    triggerEffects(dep);
+}
+
+export function triggerEffects(dep) {
     for (const effect of dep) {
         if (effect.scheduler) {
             effect.scheduler();
