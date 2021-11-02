@@ -1,4 +1,4 @@
-import { reactive, isReactive, isReadonly, readonly } from '../reactive';
+import { reactive, isReactive, isReadonly, readonly, isProxy } from '../reactive';
 
 describe('reactive', () => {
 
@@ -14,6 +14,9 @@ describe('reactive', () => {
         const read = readonly(original);
         expect(isReadonly(read)).toBe(true);
         expect(isReadonly(observed)).toBe(false);
+
+
+        expect(isProxy(observed)).toBe(true);
     })
 
     it('nested reactives', () => {
