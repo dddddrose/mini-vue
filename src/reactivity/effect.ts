@@ -1,6 +1,6 @@
 import { extend } from "./shared";
 
-class ReactiveEffect {
+export class ReactiveEffect {
     private _fn: any;
     private active: Boolean = true;
     private deps = [];
